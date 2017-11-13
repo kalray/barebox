@@ -85,6 +85,7 @@
 #define IH_ARCH_NDS32		20	/* ANDES Technology - NDS32  */
 #define IH_ARCH_OPENRISC	21	/* OpenRISC 1000  */
 #define IH_ARCH_ARM64		22	/* ARM64	*/
+#define IH_ARCH_KALRAY		23      /* Kalray       */
 
 #if defined(__PPC__)
 #define IH_ARCH IH_ARCH_PPC
@@ -112,6 +113,8 @@
 #define IH_ARCH IH_ARCH_BLACKFIN
 #elif defined(__avr32__)
 #define IH_ARCH IH_ARCH_AVR32
+#elif defined(__k1__)
+#define IH_ARCH IH_ARCH_KALRAY
 #elif defined(CONFIG_LINUX)
 #define IH_ARCH IH_ARCH_LINUX
 #endif
