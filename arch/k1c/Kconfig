@@ -1,0 +1,53 @@
+config K1C
+	bool
+	select HAS_KALLSYMS
+	select HAS_MODULES
+	select HAS_CACHE
+	select GENERIC_FIND_NEXT_BIT
+	select 64BIT
+	default y
+
+config PHYS_ADDR_T_64BIT
+	bool
+
+config 64BIT
+	bool
+	select PHYS_ADDR_T_64BIT
+	default y
+
+config ARCH_TEXT_BASE
+	hex
+	default 0x00000000
+
+menu "Kalray specific"
+
+config ARCHINFO
+	string
+	default "coolidge"
+
+config SMEM_SIZE
+	hex
+	default 0x400000
+
+config MALLOC_BASE
+	hex
+	default 0x80000000
+
+config MALLOC_SIZE
+	hex
+	default 0x800000
+	prompt "malloc area size"
+endmenu
+
+menu "Board configuration"
+
+choice
+	prompt "Select your board"
+
+config GENERIC
+	bool "Generic"
+	select K1C
+
+endchoice
+
+endmenu
