@@ -85,6 +85,11 @@ config DRIVER_SERIAL_ALTERA_JTAG
 	default n
 	bool "Altera JTAG serial driver"
 
+config DRIVER_SERIAL_K1C_SCALL
+	depends on K1C
+	default n
+	bool "K1C Syscall based console driver"
+
 config DRIVER_SERIAL_NS16550
 	default n
 	bool "NS16550 serial driver"
