@@ -68,9 +68,8 @@ SECTIONS
 	__usymtab : { BAREBOX_SYMS } > smem
 	___usymtab_end = .;
 
-	.dtb :
+	.dtb ALIGN(16):
 	{
-		. = ALIGN(16);
 		__dtb_start = .;
 		. += DTB_DEFAULT_SIZE;
 		__dtb_end = .;
