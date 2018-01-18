@@ -1,5 +1,7 @@
 config K1C
 	bool
+	select OFDEVICE
+	select OF_BAREBOX_DRIVERS
 	select HAS_KALLSYMS
 	select HAS_MODULES
 	select HAS_CACHE
