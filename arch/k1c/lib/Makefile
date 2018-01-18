@@ -1,1 +1,1 @@
-obj-y				+= cpuinfo.o
+obj-y				+= cpuinfo.o board.o dtb.o
