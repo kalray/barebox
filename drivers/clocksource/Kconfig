@@ -67,6 +67,10 @@ config CLOCKSOURCE_ROCKCHIP
 	bool
 	depends on ARCH_ROCKCHIP
 
+config CLOCKSOURCE_K1C
+	bool "K1C core timer clocksource"
+	depends on K1C
+
 config CLOCKSOURCE_ATMEL_PIT
        bool
        depends on SOC_AT91SAM9 || SOC_SAMA5
