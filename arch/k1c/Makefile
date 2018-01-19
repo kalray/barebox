@@ -8,7 +8,7 @@ ifeq ($(CROSS_COMPILE),)
 CROSS_COMPILE    := k1-elf-
 endif
 
-DEFAULT_CFLAGS := -Wall -Werror -m64 -nostdlib -fno-builtin -fstrict-align
+DEFAULT_CFLAGS := -Wall -Werror -m64 -nostdlib -fno-builtin -fstrict-align -g
 DEFAULT_CFLAGS += -Wno-implicit-function-declaration -DTEXT_BASE=$(CONFIG_TEXT_BASE)
 
 LIBGCC_PATH = $(dir $(shell $(CC) $(CFLAGS) --print-libgcc-file-name))
