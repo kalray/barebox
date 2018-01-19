@@ -68,6 +68,8 @@ SECTIONS
 	__usymtab : { BAREBOX_SYMS } > smem
 	___usymtab_end = .;
 
+	.oftables : { BAREBOX_CLK_TABLE() } > smem
+
 	.dtb ALIGN(16):
 	{
 		__dtb_start = .;
