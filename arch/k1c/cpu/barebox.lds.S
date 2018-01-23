@@ -40,7 +40,6 @@ SECTIONS
 		_etext = .;
 	}  > smem
 
-	. = ALIGN(8);
 	.rodata ALIGN(8) : {
 		*(.rodata);
 		*(.rodata.*)
@@ -89,11 +88,18 @@ SECTIONS
 		_edata = .;
 	} > smem
 
-	/* We use store quad for bss init so align on 16 bytes */
-	. = ALIGN(16);
-	__bss_start = .;
-	.bss :
+	.gdb_page ALIGN(4 * 1024) :
 	{
+		_debug_start = ABSOLUTE(.);
+		_debug_phy_start = ABSOLUTE(.);
+		. += 4 * 1024;
+	}
+	__debug_phy_end = ABSOLUTE(.);
+
+	/* We use store quad for bss init so align on 16 bytes */
+	.bss ALIGN(16):
+	{
+		__bss_start = .;
 		*(.shbss)
 		*(.bss)
 		*(COMMON)
