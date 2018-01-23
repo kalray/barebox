@@ -11,7 +11,7 @@
 
 #define SERIAL_MAX_BUFFERING	128
 
-struct k1c_jtag_console_data {
+struct k1c_scall_console_data {
 	char buffer[SERIAL_MAX_BUFFERING];
 	int cur_off;
 	struct console_device cdev;
@@ -23,7 +23,8 @@ struct pollfd {
 	short int revents;	/* Types of events that actually occurred.  */
 };
 
-static int k1c_jtag_console_poll(struct pollfd  *fds, unsigned int nfds, unsigned int timeout)
+static int k1c_scall_console_poll(struct pollfd  *fds,
+				unsigned int nfds, unsigned int timeout)
 {
 	register struct pollfd *arg1 asm("r0") = fds;
 	register unsigned int arg2 asm ("r1") = nfds;
@@ -36,7 +37,7 @@ static int k1c_jtag_console_poll(struct pollfd  *fds, unsigned int nfds, unsigne
 	return (long) arg1;
 }
 
-static int k1c_jtag_console_inbyte(char *buf)
+static int k1c_scall_console_inbyte(char *buf)
 {
 	register char *arg1 asm("r0") = buf;
 
@@ -46,7 +47,7 @@ static int k1c_jtag_console_inbyte(char *buf)
 	return (long) arg1;
 }
 
-static int k1c_jtag_console_puts(struct console_device *cdev, const char *s)
+static int k1c_scall_console_puts(struct console_device *cdev, const char *s)
 {
 	int len = strlen(s);
 	register const char *arg1 asm("r0") = s;
@@ -58,9 +59,10 @@ static int k1c_jtag_console_puts(struct console_device *cdev, const char *s)
 	return len;
 }
 
-static void k1c_jtag_console_putc(struct console_device *cdev, char c)
+static void k1c_scall_console_putc(struct console_device *cdev, char c)
 {
-	struct k1c_jtag_console_data *data = container_of(cdev, struct k1c_jtag_console_data, cdev);
+	struct k1c_scall_console_data *data =
+		container_of(cdev, struct k1c_scall_console_data, cdev);
 	
 	data->buffer[data->cur_off] = c;
 	data->cur_off++;
@@ -68,20 +70,20 @@ static void k1c_jtag_console_putc(struct console_device *cdev, char c)
 	if (c == '\n' || data->cur_off == SERIAL_MAX_BUFFERING - 1) {
 		data->buffer[data->cur_off] = '\0';
 		data->cur_off = 0;
-		k1c_jtag_console_puts(cdev, data->buffer);
+		k1c_scall_console_puts(cdev, data->buffer);
 	}
 }
 
-static int k1c_jtag_console_getc(struct console_device *cdev)
+static int k1c_scall_console_getc(struct console_device *cdev)
 {
 	char c;
 
-	k1c_jtag_console_inbyte(&c);
+	k1c_scall_console_inbyte(&c);
 
 	return c;
 }
 
-static int k1c_jtag_console_tstc(struct console_device *cdev)
+static int k1c_scall_console_tstc(struct console_device *cdev)
 {
 	struct pollfd fds;
 	int poll_ret;
@@ -90,7 +92,7 @@ static int k1c_jtag_console_tstc(struct console_device *cdev)
 	fds.events = 0x001;
 	fds.revents = 0;
 
-	poll_ret = k1c_jtag_console_poll(&fds, 1, 0);
+	poll_ret = k1c_scall_console_poll(&fds, 1, 0);
 	if (poll_ret <= 0)
 		return 0;
 
@@ -100,38 +102,38 @@ static int k1c_jtag_console_tstc(struct console_device *cdev)
 	return 1;
 }
 
-static int k1c_jtag_console_probe(struct device_d *dev)
+static int k1c_scall_console_probe(struct device_d *dev)
 {
 	struct console_device *cdev;
-	struct k1c_jtag_console_data *data;
+	struct k1c_scall_console_data *data;
 
-	data = xzalloc(sizeof(struct k1c_jtag_console_data));
+	data = xzalloc(sizeof(struct k1c_scall_console_data));
 
 	cdev = &data->cdev;
 	cdev->dev = dev;
-	cdev->putc = k1c_jtag_console_putc;
-	cdev->puts = k1c_jtag_console_puts;
-	cdev->tstc = k1c_jtag_console_tstc;
-	cdev->getc = k1c_jtag_console_getc;
-	cdev->devname = "jtag";
+	cdev->putc = k1c_scall_console_putc;
+	cdev->puts = k1c_scall_console_puts;
+	cdev->tstc = k1c_scall_console_tstc;
+	cdev->getc = k1c_scall_console_getc;
+	cdev->devname = "scall";
 
 	console_register(&data->cdev);
 
 	return 0;
 }
 
-static __maybe_unused struct of_device_id k1c_jtag_console[] = {
+static __maybe_unused struct of_device_id k1c_scall_console[] = {
 	{
-		.compatible = "kalray,k1c-jtag-console",
+		.compatible = "kalray,k1c-scall-console",
 	}, {
 	}
 };
 
-static struct driver_d k1c_jtag_console_driver = {
-        .name  = "k1c_jtag_console",
-        .probe = k1c_jtag_console_probe,
-	.of_compatible = DRV_OF_COMPAT(k1c_jtag_console),
+static struct driver_d k1c_scall_console_driver = {
+	.name  = "k1c_scall_console",
+	.probe = k1c_scall_console_probe,
+	.of_compatible = DRV_OF_COMPAT(k1c_scall_console),
 };
 
-console_platform_driver(k1c_jtag_console_driver);
+console_platform_driver(k1c_scall_console_driver);
 
