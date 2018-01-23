@@ -168,6 +168,7 @@ itead	ITEAD Intelligent Systems Co.Ltd
 iwave  iWave Systems Technologies Pvt. Ltd.
 jdi	Japan Display Inc.
 jedec	JEDEC Solid State Technology Association
+kalray	Kalray Inc.
 karo	Ka-Ro electronics GmbH
 keithkoep	Keith & Koep GmbH
 keymile	Keymile GmbH
