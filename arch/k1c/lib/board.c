@@ -6,15 +6,18 @@
  * Copyright (C) 2018 Kalray Inc.
  */
 
+#include <common.h>
 #include <malloc.h>
 #include <memory.h>
 #include <asm-generic/memory_layout.h>
 
 
-void k1c_start_barebox(void)
+void __noreturn k1c_start_barebox(void)
 {
 	mem_malloc_init((void *)CONFIG_MALLOC_BASE,
 			(void *)(CONFIG_MALLOC_BASE + MALLOC_SIZE - 1));
 
 	start_barebox();
+
+	hang();
 }
