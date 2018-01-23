@@ -47,25 +47,36 @@ SECTIONS
 
 	. = ALIGN(4);
 	. = .;
-	__barebox_cmd_start = .;
-	.barebox_cmd : { BAREBOX_CMDS } > smem
-	__barebox_cmd_end = .;
 
-	__barebox_magicvar_start = .;
-	.barebox_magicvar : { BAREBOX_MAGICVARS } > smem
-	__barebox_magicvar_end = .;
+	.barebox_cmd ALIGN(8) : {
+		__barebox_cmd_start = .;
+		BAREBOX_CMDS
+		__barebox_cmd_end = .;
+	 } > smem
 
-	__barebox_initcalls_start = .;
-	.barebox_initcalls : { INITCALLS } > smem
-	__barebox_initcalls_end = .;
+	.barebox_magicvar ALIGN(8) : {
+		__barebox_magicvar_start = .;
+		BAREBOX_MAGICVARS
+		__barebox_magicvar_end = .;
+	} > smem
 
-	__barebox_exitcalls_start = .;
-	.barebox_exitcalls : { EXITCALLS } > smem
-	__barebox_exitcalls_end = .;
+	.barebox_initcalls ALIGN(8) : {
+		__barebox_initcalls_start = .;
+		 INITCALLS
+		__barebox_initcalls_end = .;
+	} > smem
 
-	___usymtab_start = .;
-	__usymtab : { BAREBOX_SYMS } > smem
-	___usymtab_end = .;
+	.barebox_exitcalls ALIGN(8) : {
+		__barebox_exitcalls_start = .;
+		EXITCALLS
+		__barebox_exitcalls_end = .;
+	} > smem
+
+	__usymtab ALIGN(8) : {
+		___usymtab_start = .;
+		BAREBOX_SYMS
+		___usymtab_end = .;
+	} > smem
 
 	.oftables : { BAREBOX_CLK_TABLE() } > smem
 
