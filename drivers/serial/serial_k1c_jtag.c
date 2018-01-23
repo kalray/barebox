@@ -17,6 +17,35 @@ struct k1c_jtag_console_data {
 	struct console_device cdev;
 };
 
+struct pollfd {
+	int fd;			/* File descriptor to poll.  */
+	short int events;	/* Types of events poller cares about.  */
+	short int revents;	/* Types of events that actually occurred.  */
+};
+
+static int k1c_jtag_console_poll(struct pollfd  *fds, unsigned int nfds, unsigned int timeout)
+{
+	register struct pollfd *arg1 asm("r0") = fds;
+	register unsigned int arg2 asm ("r1") = nfds;
+	register unsigned int arg3 asm ("r2") = timeout;
+
+	asm volatile ("scall 0xfdb\n\t;;"
+			: "+r"(arg1)
+			: "r"(arg2), "r"(arg3)
+			: "r3", "r4", "r5", "r6", "r7", "r8", "memory");
+	return (long) arg1;
+}
+
+static int k1c_jtag_console_inbyte(char *buf)
+{
+	register char *arg1 asm("r0") = buf;
+
+	asm volatile ("scall 0xfda\n\t;;"
+			: "+r"(arg1)
+			: : "r1", "r2", "r3", "r4", "r5", "r6", "r7", "r8", "memory");
+	return (long) arg1;
+}
+
 static int k1c_jtag_console_puts(struct console_device *cdev, const char *s)
 {
 	int len = strlen(s);
@@ -24,8 +53,8 @@ static int k1c_jtag_console_puts(struct console_device *cdev, const char *s)
 	register unsigned arg2 asm ("r1") = len;
 
 	asm volatile ("scall 0xffe\n\t;;"
-			: "+r"(arg1), "+r"(arg2)
-			: : "r2", "r3", "r4", "r5", "r6", "r7", "r8", "r9", "r11", "memory");
+			: : "r"(arg1), "r"(arg2)
+			: "r2", "r3", "r4", "r5", "r6", "r7", "r8", "memory");
 	return len;
 }
 
@@ -45,12 +74,30 @@ static void k1c_jtag_console_putc(struct console_device *cdev, char c)
 
 static int k1c_jtag_console_getc(struct console_device *cdev)
 {
-	return 0;
+	char c;
+
+	k1c_jtag_console_inbyte(&c);
+
+	return c;
 }
 
 static int k1c_jtag_console_tstc(struct console_device *cdev)
 {
-	return 0;
+	struct pollfd fds;
+	int poll_ret;
+
+	fds.fd = 0;
+	fds.events = 0x001;
+	fds.revents = 0;
+
+	poll_ret = k1c_jtag_console_poll(&fds, 1, 0);
+	if (poll_ret <= 0)
+		return 0;
+
+	if ((fds.revents & 0x001) == 0)
+		return 0;
+
+	return 1;
 }
 
 static int k1c_jtag_console_probe(struct device_d *dev)
