@@ -12,10 +12,14 @@
 
 static void __noreturn k1c_poweroff(struct poweroff_handler *handler)
 {
+	register int status asm("r0") = 0;
+
 	shutdown_barebox();
 
-	asm volatile ("scall 0xfff\n\t;;");
-
+	asm volatile ("scall 0xfff\n\t;;"
+			: : "r"(status)
+			: "r1", "r2", "r3", "r4", "r5", "r6", "r7",
+							"r8", "memory");
 	hang();
 }
 
