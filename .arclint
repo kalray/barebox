@@ -1,0 +1,9 @@
+{
+  "linters": {
+    "linux": {
+      "type": "checkpatch",
+      "include": "(\\.(c|h)$)",
+      "bin": ["./scripts/checkpatch.pl"]
+    }
+  }
+}
