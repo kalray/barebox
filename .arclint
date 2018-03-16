@@ -1,0 +1,9 @@
+{
+  "linters": {
+    "linux": {
+      "type": "checkpatch",
+      "include": "(\\.(c|h)$)",
+      "checkpatch.notree": "true"
+    }
+  }
+}
