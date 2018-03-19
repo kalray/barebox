@@ -20,6 +20,11 @@
 /* Shift the whole value to set the bits to set using wfxl */
 #define PS_WFXL_VALUE		(PS_DEFAULT_VALUE << 32)
 
+/* Enable STOP in WS */
+#define WS_ENABLE_WU2		(K1C_MASK_WS_WU2)
+
+#define WS_WFXL_VALUE		(WS_ENABLE_WU2)
+
 .section .startup, "ax"
 ENTRY(k1c_start)
 	/* (Re)initialize performance counter */
@@ -62,16 +67,14 @@ ENTRY(k1c_start)
 	;;
 ENDPROC(k1c_start)
 
-k1c_proc_power_off:
+ENTRY(k1c_proc_power_off):
 	dinval
-        ;;
-        /* Enable idle */
-	make $r1 = 0x8000
+	make $r1 = WS_WFXL_VALUE
 	;;
-	wfxl $cs, $r1
+        /* Enable STOP */
+	wfxl $ws, $r1
 	;;
-1:
-	idle3
+1:	stop
 	;;
 	goto 1b
 	;; 
