@@ -49,7 +49,7 @@ ENTRY(k1c_start)
 	make $r25 = 0
 	;;
 	/* Clear bss with hardware loop */
-        loopgtz $r22, clear_bss_done 
+        loopdo $r22, clear_bss_done 
 		;;
 		sq 0[$r21] = $r24r25
 		addd $r21 = $r21, 16
