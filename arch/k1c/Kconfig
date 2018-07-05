@@ -38,7 +38,7 @@ config SMEM_SIZE
 
 config MALLOC_BASE
 	hex
-	default 0x80000000
+	default 0x100000000
 
 config MALLOC_SIZE
 	hex
