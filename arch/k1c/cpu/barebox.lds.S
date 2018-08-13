@@ -14,6 +14,7 @@
  */
 
 #include <config.h>
+#include <asm/common.h>
 #include <asm-generic/barebox.lds.h>
 
 OUTPUT_FORMAT("elf64-k1")
@@ -39,6 +40,33 @@ SECTIONS
 		*(.text)
 		_etext = .;
 	}  > smem
+
+	/* Exception vector must be aligned on a huge frontier */
+	.exception ALIGN(EXCEPTION_ALIGNMENT) :
+	{
+		_exception_start = ABSOLUTE(.);
+		/**
+		 * First handler is at _exception_start + EXCEPTION_STRIDE
+		 * In order to force getting to the next stride, add at
+		 * least 1 byte of data. The next ALIGN will then be
+		 * forced to get to the next stride.
+		 */
+		. += 1;
+		. = ALIGN(EXCEPTION_STRIDE);
+
+		/* Entry for traps */
+		KEEP(*(.exception.trap));
+		. += 1;
+
+		/* Entry for interrupts */
+		. = ALIGN(EXCEPTION_STRIDE);
+		KEEP(*(.exception.interrupt));
+		. += 1;
+
+		/* Entry for syscall */
+		. = ALIGN(EXCEPTION_STRIDE);
+		KEEP(*(.exception.syscall));
+	} > smem
 
 	.rodata ALIGN(8) : {
 		*(.rodata);

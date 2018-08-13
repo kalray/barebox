@@ -60,6 +60,8 @@ ENTRY(k1c_start)
 	/* Setup stack */
 	make $sp, (CONFIG_SMEM_SIZE - SCRATCHPAD_SIZE)
 	;;
+	call k1c_lowlevel_setup
+	;;
 	call k1c_start_barebox
 	;;
 	goto k1c_proc_power_off
