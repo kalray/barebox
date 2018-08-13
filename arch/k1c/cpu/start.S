@@ -25,6 +25,8 @@
 
 #define WS_WFXL_VALUE		(WS_ENABLE_WU2)
 
+#define SCRATCHPAD_SIZE          16
+
 .section .startup, "ax"
 ENTRY(k1c_start)
 	/* (Re)initialize performance counter */
@@ -56,12 +58,9 @@ ENTRY(k1c_start)
 		;;
 	clear_bss_done:
 	/* Setup stack */
-	make $r12, (CONFIG_SMEM_SIZE - 16)
+	make $sp, (CONFIG_SMEM_SIZE - SCRATCHPAD_SIZE)
 	;;
-	/* Here we go ! start the C stuff */
-	make $r20 = k1c_start_barebox
-	;;
-	icall $r20
+	call k1c_start_barebox
 	;;
 	goto k1c_proc_power_off
 	;;
