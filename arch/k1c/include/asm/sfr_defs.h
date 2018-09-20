@@ -5,6 +5,7 @@
 
 #define _ULL(X) _AC(X, ULL)
 
+#define K1C_SFR_PC 0 /* Program Counter $pc $s0 */
 #define K1C_SFR_PS 1 /* Processing Status $ps $s1 */
 #define K1C_SFR_SPC 2 /* Shadow Program Counter $spc $s2 */
 #define K1C_SFR_SPS 3 /* Shadow Processing Status $sps $s3 */
