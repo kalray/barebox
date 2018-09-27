@@ -82,6 +82,12 @@ SECTIONS
 		__barebox_cmd_end = .;
 	 } > smem
 
+	.barebox_ratp_cmd ALIGN(8) : {
+		__barebox_ratp_cmd_start = .;
+		BAREBOX_RATP_CMDS
+		__barebox_ratp_cmd_end = .;
+	 } > smem
+
 	.barebox_magicvar ALIGN(8) : {
 		__barebox_magicvar_start = .;
 		BAREBOX_MAGICVARS
