@@ -57,8 +57,8 @@
 #define K1C_SFR_OCEA 49 /* OCE Address $ocea $s49 */
 #define K1C_SFR_ES 50 /* Exception Syndrome $es $s50 */
 #define K1C_SFR_ILR 51 /* Interrupt Line Request $ilr $s51 */
-#define K1C_SFR_MES 52 /* Memory Error Status $mes $s54 */
-#define K1C_SFR_WS 53 /* Wake-Up Status $ws $s53 */
+#define K1C_SFR_WS 52 /* Wake-Up Status $ws $s53 */
+#define K1C_SFR_MES 53 /* Memory Error Status $mes $s54 */
 
 /* Register field masks */
 
@@ -296,6 +296,16 @@
 #define K1C_SFR_CS_SPCV_SHIFT 46
 #define K1C_SFR_CS_SPCV_WFX_CLEAR _ULL(0x0)
 #define K1C_SFR_CS_SPCV_WFX_SET _ULL(0x0)
+
+#define K1C_SFR_CS_XDROP_MASK _ULL(0x3f000000000000) /* Extension Conversion Drop Bits */
+#define K1C_SFR_CS_XDROP_SHIFT 48
+#define K1C_SFR_CS_XDROP_WFX_CLEAR _ULL(0x0)
+#define K1C_SFR_CS_XDROP_WFX_SET _ULL(0x0)
+
+#define K1C_SFR_CS_XPOW2_MASK _ULL(0xfc0000000000000) /* Extension FScale Power of Two */
+#define K1C_SFR_CS_XPOW2_SHIFT 54
+#define K1C_SFR_CS_XPOW2_WFX_CLEAR _ULL(0x0)
+#define K1C_SFR_CS_XPOW2_WFX_SET _ULL(0x0)
 
 #define K1C_SFR_ES_EC_MASK _ULL(0x7) /* Exception Class */
 #define K1C_SFR_ES_EC_SHIFT 0
