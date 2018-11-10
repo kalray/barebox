@@ -18,7 +18,7 @@
 #include <asm-generic/barebox.lds.h>
 
 OUTPUT_FORMAT("elf64-k1")
-OUTPUT_ARCH("k1")
+OUTPUT_ARCH("k1:k1c:64")
 
 #define K1C_ENTRY_ADDRESS	0x0
 #define DTB_DEFAULT_SIZE	(24 * 1024)
