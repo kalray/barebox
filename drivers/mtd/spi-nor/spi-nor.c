@@ -520,7 +520,8 @@ static const struct spi_device_id spi_nor_ids[] = {
 	{ "640s33b",  INFO(0x898913, 0, 64 * 1024, 128, 0) },
 
 	/* ISSI */
-	{ "is25lq128", INFO(0x9d6018,  0,  64 * 1024, 256, 0) },
+	{ "is25lq128",  INFO(0x9d6018, 0, 64 * 1024, 256, 0) },
+	{ "is25lp256d", INFO(0x9d6019, 0, 64 * 1024,  512, SECT_4K | SPI_NOR_QUAD_READ) },
 
 	/* Macronix */
 	{ "mx25l2005a",  INFO(0xc22012, 0, 64 * 1024,   4, SECT_4K) },
