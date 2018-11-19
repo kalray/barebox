@@ -397,6 +397,16 @@ config CMD_GO
 	  If addr does not start with a digit it is interpreted as a filename
 	  in which case the file is memmapped and executed
 
+config CMD_XIP
+	tristate
+	prompt "xip"
+	help
+	  Start application at address
+
+	  Usage: xip ADDR [ARG...]
+
+	  Start application at ADDR passing ARG as arguments.
+
 config CMD_LOADB
 	depends on CONSOLE_FULL
 	select CRC16
