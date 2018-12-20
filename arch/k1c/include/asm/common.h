@@ -9,9 +9,6 @@
 #ifndef _ASM_K1C_COMMON_H
 #define _ASM_K1C_COMMON_H
 
-#define EXCEPTION_STRIDE	0x40
-#define EXCEPTION_ALIGNMENT	0x1000
-
 #ifndef __ASSEMBLY__
 
 extern char _exception_start;
