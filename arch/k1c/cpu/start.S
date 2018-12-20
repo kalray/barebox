@@ -25,8 +25,6 @@
 
 #define WS_WFXL_VALUE		(WS_ENABLE_WU2)
 
-#define SCRATCHPAD_SIZE          16
-
 .section .startup, "ax"
 ENTRY(k1c_start)
 	/* (Re)initialize performance counter */
@@ -58,7 +56,7 @@ ENTRY(k1c_start)
 		;;
 	clear_bss_done:
 	/* Setup stack */
-	make $sp, (CONFIG_SMEM_SIZE - SCRATCHPAD_SIZE)
+	make $sp, CONFIG_SMEM_SIZE
 	;;
 	call k1c_lowlevel_setup
 	;;
