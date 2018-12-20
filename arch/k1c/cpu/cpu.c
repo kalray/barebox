@@ -8,6 +8,7 @@
 
 #include <common.h>
 #include <asm/sfr.h>
+#include <asm/sys_arch.h>
 
 void k1c_lowlevel_setup(void)
 {

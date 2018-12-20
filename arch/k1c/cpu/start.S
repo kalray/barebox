@@ -8,17 +8,23 @@
 
 #include <config.h>
 #include <linux/linkage.h>
-#include <asm/sfr_defs.h>
+#include <asm/privilege.h>
+#include <asm/sys_arch.h>
 
-/* Enable 64bits for both user and kernel */
-#define PS_ENABLE_64BIT		(K1C_SFR_PS_P64_MASK | K1C_SFR_PS_U64_MASK)
-/* Enable both ICache and DCache */
-#define PS_ENABLE_CACHES	(K1C_SFR_PS_DCE_MASK | K1C_SFR_PS_ICE_MASK)
-/* Enable also hardware loops and uncached streaming */
-#define PS_DEFAULT_VALUE	(K1C_SFR_PS_HLE_MASK | K1C_SFR_PS_USE_MASK | \
-				 PS_ENABLE_CACHES | PS_ENABLE_64BIT)
-/* Shift the whole value to set the bits to set using wfxl */
-#define PS_WFXL_VALUE		(PS_DEFAULT_VALUE << 32)
+#define PS_VAL_WFXL(__field, __val) \
+	SFR_SET_VAL_WFXL(PS, __field, __val)
+
+#define PS_WFXL_START_VALUE	PS_VAL_WFXL(HLE, 1) | \
+				PS_VAL_WFXL(USE, 1) | \
+				PS_VAL_WFXL(DCE, 1) | \
+				PS_VAL_WFXL(ICE, 1) | \
+				PS_VAL_WFXL(V64, 1) | \
+				PS_VAL_WFXL(ET, 0)
+
+#define PCR_VAL_WFXM(__field, __val) \
+	SFR_SET_VAL_WFXM(PCR, __field, __val)
+
+#define PCR_WFXM_START_VALUE   PCR_VAL_WFXM(L1CE, 1)
 
 /* Enable STOP in WS */
 #define WS_ENABLE_WU2		(K1C_SFR_WS_WU2_MASK)
@@ -32,10 +38,16 @@ ENTRY(k1c_start)
 	;;
 	set $pmc = $r20
 	;;
+	call asm_init_pl
+	;;
 	/* Setup default processor status */
-	make $r25 = PS_WFXL_VALUE
+	make $r25 = PS_WFXL_START_VALUE
 	;;
 	wfxl $ps = $r25
+	;;
+	make $r25 = PCR_WFXM_START_VALUE
+	;;
+	wfxm $pcr = $r25
 	;;
 	/* Clear BSS */
 	make $r22 = __bss_stop
@@ -65,6 +77,81 @@ ENTRY(k1c_start)
 	goto k1c_proc_power_off
 	;;
 ENDPROC(k1c_start)
+
+/**
+ * Initialize privilege level
+ */
+ENTRY(asm_init_pl)
+	get $r21 = $ps
+	;;
+	/* Extract privilege level from $ps to check if we need to
+	 * lower our privilege level (we might already be in PL1)
+	 */
+	extfz $r20 = $r21, K1C_SFR_END(PS_PL), K1C_SFR_START(PS_PL)
+	;;
+	/* If our pviliege level is not 0 (ie we are already in a less
+	 * privilege level, then, somebody take care of setting the
+	 * ring settings for us and we can return directly
+	 */
+	cb.deqz $r20? delegate_pl
+	;;
+	ret
+	;;
+delegate_pl:
+	make $r21 = SYO_WFXL_VALUE
+	;;
+	wfxl $syow = $r21
+	;;
+	make $r21 = HTO_WFXL_VALUE
+	;;
+	wfxl $htow = $r21
+	;;
+	make $r21 = DO_WFXL_VALUE
+	;;
+	wfxl $dow = $r21
+	;;
+	make $r21 = MO_WFXL_VALUE
+	make $r22 = MO_WFXM_VALUE
+	;;
+	wfxl $mow = $r21
+	;;
+	wfxm $mow = $r22
+	;;
+	make $r21 = ITO_WFXL_VALUE
+	make $r22 = ITO_WFXM_VALUE
+	;;
+	wfxl $itow = $r21
+	;;
+	wfxm $itow = $r21
+	;;
+	make $r21 = PSO_WFXL_VALUE
+	;;
+	wfxl $psow = $r21
+	;;
+	make $r21 = PSO_WFXM_VALUE
+	;;
+	wfxm $psow = $r21
+	;;
+	/* Copy our $ps into $sps for 1:1 restoration */
+	get $r22 = $ps
+	;;
+	/* We will return to $ra after rfe */
+	get $r21 = $ra
+	/* Set privilege level to +1 in $sps (relative level from the
+	 * current one)
+	 */
+	addd $r22 = $r22, PL_BAREBOX_REL_LEVEL
+	;;
+	set $spc = $r21
+	;;
+	set $sps = $r22
+	;;
+	/* When using rfe, $spc and $sps will be restored in $ps and $pc,
+	 * We will then return to the caller ($ra) in current PL + 1
+	 */
+	rfe
+	;;
+ENDPROC(asm_init_pl)
 
 ENTRY(k1c_proc_power_off):
 	dinval

@@ -15,6 +15,7 @@
 
 #include <config.h>
 #include <asm/common.h>
+#include <asm/sys_arch.h>
 #include <asm-generic/barebox.lds.h>
 
 OUTPUT_FORMAT("elf64-k1")

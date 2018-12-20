@@ -29,8 +29,8 @@ struct k1c_wdt {
 
 static void k1c_watchdog_disable(void)
 {
-	k1c_sfr_clear_bit(K1C_SFR_TC, K1C_SFR_TC_WUI_SHIFT);
-	k1c_sfr_clear_bit(K1C_SFR_TC, K1C_SFR_TC_WCE_SHIFT);
+	k1c_sfr_clear_bit(K1C_SFR_TCR, K1C_SFR_TCR_WUI_SHIFT);
+	k1c_sfr_clear_bit(K1C_SFR_TCR, K1C_SFR_TCR_WCE_SHIFT);
 }
 
 static int k1c_wdt_set_timeout(struct watchdog *wdd, unsigned int timeout)
@@ -44,12 +44,12 @@ static int k1c_wdt_set_timeout(struct watchdog *wdd, unsigned int timeout)
 		return 0;
 	}
 
-	k1c_sfr_set(K1C_SFR_WDC, cycle_timeout);
+	k1c_sfr_set(K1C_SFR_WDV, cycle_timeout);
 	k1c_sfr_set(K1C_SFR_WDR, 0);
 
 	/* Start watchdog counting */
-	k1c_sfr_set_bit(K1C_SFR_TC, K1C_SFR_TC_WUI_SHIFT);
-	k1c_sfr_set_bit(K1C_SFR_TC, K1C_SFR_TC_WCE_SHIFT);
+	k1c_sfr_set_bit(K1C_SFR_TCR, K1C_SFR_TCR_WUI_SHIFT);
+	k1c_sfr_set_bit(K1C_SFR_TCR, K1C_SFR_TCR_WCE_SHIFT);
 
 	return 0;
 }
@@ -96,7 +96,7 @@ static int k1c_wdt_drv_probe(struct device_d *dev)
 	wdd->set_timeout = k1c_wdt_set_timeout;
 
 	/* Be sure that interrupt are disable */
-	k1c_sfr_clear_bit(K1C_SFR_TC, K1C_SFR_TC_WIE_SHIFT);
+	k1c_sfr_clear_bit(K1C_SFR_TCR, K1C_SFR_TCR_WIE_SHIFT);
 
 	k1c_watchdog_disable();
 
