@@ -14,3 +14,4 @@ obj-$(CONFIG_MCI_TEGRA)		+= tegra-sdmmc.o
 obj-$(CONFIG_MCI_SPI)		+= mci_spi.o
 obj-$(CONFIG_MCI_DW)		+= dw_mmc.o
 obj-$(CONFIG_MCI_MMCI)		+= mmci.o
+obj-$(CONFIG_MCI_DWC_MSHC)   += dw_mshc.o
