@@ -12,6 +12,7 @@ config K1C
 	select FLEXIBLE_BOOTARGS
 	select PARTITION
 	select 64BIT
+	select HAS_DMA
 	default y
 
 config PHYS_ADDR_T_64BIT
@@ -20,6 +21,7 @@ config PHYS_ADDR_T_64BIT
 config 64BIT
 	bool
 	select PHYS_ADDR_T_64BIT
+	select ARCH_DMA_ADDR_T_64BIT
 	default y
 
 config ARCH_TEXT_BASE
