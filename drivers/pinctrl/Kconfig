@@ -55,6 +55,14 @@ config PINCTRL_AT91PIO4
 	  Say Y here to enable the at91 pinctrl/gpio driver for Atmel PIO4
 	  controller available on sama5d2 SoC.
 
+config GPIO_DESIGNWARE
+	tristate "Synopsys DesignWare GPIO/pinctrl driver"
+        select GPIOLIB
+        select OF_GPIO
+	help
+	  Say Y or M here to build support for the Synopsys DesignWare APB
+	  GPIO block.
+
 config PINCTRL_MXS
 	bool "MXS pinctrl"
 	depends on ARCH_MXS || COMPILE_TEST

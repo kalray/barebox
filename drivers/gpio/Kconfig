@@ -165,12 +165,6 @@ config GPIO_TEGRA
 	  Say yes here to include the driver for the GPIO controller found on the
 	  Tegra line of SoCs.
 
-config GPIO_DESIGNWARE
-	tristate "Synopsys DesignWare GPIO driver"
-	help
-	  Say Y or M here to build support for the Synopsys DesignWare APB
-	  GPIO block.
-
 config GPIO_SX150X
 	bool "Semtec SX150x I/O ports"
 	depends on I2C
