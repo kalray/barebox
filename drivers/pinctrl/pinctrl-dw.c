@@ -1,5 +1,6 @@
 // SPDX-License-Identifier: GPL-2.0-or-later
 // SPDX-FileCopyrightText: 2012 Altera
+// SPDX-FileCopyrightText: 2020 Clement Leger, Kalray
 
 /*
  * Designware GPIO support functions
@@ -11,9 +12,11 @@
 #include <gpio.h>
 #include <init.h>
 #include <linux/err.h>
+#include <pinctrl.h>
 
 #define DW_GPIO_DR 		0x0
 #define DW_GPIO_DDR		0x4
+#define DW_GPIO_CTL		0x8
 #define DW_GPIO_EXT 		0x50
 #define DW_GPIO_CONFIG2		0x70
 #define DW_GPIO_CONFIG1		0x74
@@ -27,6 +30,7 @@ struct dw_gpio {
 
 struct dw_gpio_instance {
 	struct dw_gpio *parent;
+	struct pinctrl_device pdev;
 	struct gpio_chip chip;
 	u32 gpio_state;		/* GPIO state shadow register */
 	u32 gpio_dir;		/* GPIO direction shadow register */
@@ -104,6 +108,71 @@ static struct gpio_ops dw_gpio_ops = {
 	.set = dw_gpio_set,
 };
 
+static int dw_pinctrl_set_state(struct pinctrl_device *pdev,
+				struct device_node *group)
+{
+	int num_pins = 0, i, ret, pin_id;
+	const char *func, *pin;
+	u32 gpio_ctl;
+	struct dw_gpio_instance *chip = container_of(pdev,
+						     struct dw_gpio_instance,
+						     pdev);
+	struct dw_gpio *parent = chip->parent;
+
+	ret = of_property_read_string(group, "function", &func);
+	if (ret) {
+		dev_err(pdev->dev, "Missing \"function\" property: %d\n",
+			ret);
+		return ret;
+	}
+
+	num_pins = of_property_count_strings(group, "pins");
+	if (!num_pins) {
+		dev_err(pdev->dev, "Missing \"pins\" property: %d\n", ret);
+		return -EINVAL;
+	}
+
+	for (i = 0; i < num_pins; i++) {
+		ret = of_property_read_string_index(group, "pins", i, &pin);
+		if (ret) {
+			dev_err(pdev->dev, "Failed to read pins[%d]: %d\n",
+				i, ret);
+			return ret;
+		}
+		if (strncmp(pin, "pin", 3)) {
+			dev_err(pdev->dev, "Invalid pin description: %s\n",
+				pin);
+			return -EINVAL;
+		}
+
+		ret = kstrtoint(&pin[3], 10, &pin_id);
+		if (ret) {
+			dev_err(pdev->dev, "Invalid pin index: %d\n", ret);
+			return ret;
+		}
+
+		dev_dbg(pdev->dev, "Setting function %s on pin %d\n", func,
+			pin_id);
+
+		gpio_ctl = readl(parent->regs + DW_GPIO_CTL);
+		if (strcmp(func, "hw") == 0) {
+			gpio_ctl |= (1 << pin_id);
+		} else if (strcmp(func, "sw") == 0) {
+			gpio_ctl &= ~(1 << pin_id);
+		} else {
+			dev_err(pdev->dev, "Invalid function: %s\n", func);
+			return -EINVAL;
+		}
+		writel(gpio_ctl, parent->regs + DW_GPIO_CTL);
+	}
+
+	return 0;
+}
+
+static struct pinctrl_ops dw_pinctrl_ops = {
+	.set_state = dw_pinctrl_set_state,
+};
+
 static int dw_gpio_add_port(struct device *dev, struct device_node *node,
 			    struct dw_gpio *parent)
 {
@@ -139,6 +208,16 @@ static int dw_gpio_add_port(struct device *dev, struct device_node *node,
 	}
 
 	chip->chip.dev->of_node = node;
+
+	if (of_property_read_bool(node, "snps,has-pinctrl")) {
+		chip->pdev.dev = dev;
+		chip->pdev.ops = &dw_pinctrl_ops;
+		ret = pinctrl_register(&chip->pdev);
+		if (ret) {
+			dev_err(dev, "pinctrl_register failed: (%d)\n", ret);
+			return ret;
+		}
+	}
 
 	ret = gpiochip_add(&chip->chip);
 	if (ret)
