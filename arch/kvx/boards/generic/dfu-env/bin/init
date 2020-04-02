@@ -1,0 +1,27 @@
+#!/bin/sh
+PATH=/env/bin
+export PATH
+
+otg0.mode=peripheral
+
+gadget0.vendor=0x31fa
+gadget0.product=0xdf02
+gadget0.manufacturer=Kalray
+gadget0.productname=$global.kvx.arch_rev
+gadget0.serialnumber=$global.kvx.mppa_id
+if [ -n "$global.kvx.board_sn" ]; then
+	gadget0.serialnumber=$global.kvx.board_sn
+fi
+
+alt="/tmp/kernel(/tmp/kernel)cr"
+for i in /dev/mtd*;  do if [ -e "$i" ]; then; alt="$alt,$i($i)sr"; fi; done;
+for i in /dev/disk*; do if [ -e "$i" ]; then; alt="$alt,$i($i)r"; fi; done;
+usbgadget -D "$alt" -a
+
+autoboot_timeout=10
+echo -e "\e[?25h"
+if [ -n "$autoboot_timeout" ]; then
+	echo -n "Hit any key to stop autoboot: "
+	timeout -ae $autoboot_timeout || exit
+	boot
+fi
