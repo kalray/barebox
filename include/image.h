@@ -104,6 +104,8 @@
 #define IH_ARCH IH_ARCH_AVR32
 #elif defined(CONFIG_LINUX)
 #define IH_ARCH IH_ARCH_LINUX
+#else
+#define IH_ARCH IH_ARCH_INVALID
 #endif
 
 /*
