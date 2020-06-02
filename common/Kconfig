@@ -40,7 +40,6 @@ config BLOCK_WRITE
 
 config ELF
 	bool
-	depends on MIPS
 
 config FILETYPE
 	bool
