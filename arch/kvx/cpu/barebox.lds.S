@@ -10,7 +10,7 @@
 OUTPUT_FORMAT("elf64-kvx")
 OUTPUT_ARCH("kvx:kv3-1:64")
 
-#define DTB_DEFAULT_SIZE	(24 * 1024)
+#define DTB_DEFAULT_SIZE	(64 * 1024)
 
 SECTIONS
 {
