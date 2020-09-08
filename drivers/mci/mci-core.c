@@ -895,7 +895,7 @@ static void mci_extract_card_dsr_imp_from_csd(struct mci *mci)
 
 static int mmc_compare_ext_csds(struct mci *mci, unsigned bus_width)
 {
-	char *bw_ext_csd;
+	uint8_t *bw_ext_csd;
 	int err;
 
 	if (bus_width == MMC_BUS_WIDTH_1)
