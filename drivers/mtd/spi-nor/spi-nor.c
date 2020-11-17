@@ -25,7 +25,6 @@
 #include <spi/flash.h>
 
 #define SPI_NOR_MAX_ID_LEN	6
-#define SPI_NOR_MAX_ADDR_WIDTH	4
 
 /*
  * For everything but full-chip erase; probably could be much smaller, but kept
