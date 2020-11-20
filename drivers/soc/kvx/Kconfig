@@ -1,0 +1,9 @@
+menu "KVX SoC drivers"
+
+config KVX_SOCINFO
+        bool "KVX SoC Info driver"
+	depends on KVX
+	select NVMEM
+	default y
+
+endmenu
