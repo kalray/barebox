@@ -40,6 +40,18 @@ menu "Kalray specific"
 config ARCHINFO
 	string
 	default "coolidge"
+
+choice
+	prompt "KVX CPU variant"
+
+config ARCH_COOLIDGE_V1
+	bool "Coolidge V1 (KV3-1)"
+
+config ARCH_COOLIDGE_V2
+	bool "Coolidge V2 (KV3-2)"
+
+endchoice
+
 endmenu
 
 menu "Board configuration"
