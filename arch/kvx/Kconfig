@@ -49,6 +49,10 @@ config ARCH_COOLIDGE_V2
 
 endchoice
 
+config CMD_KVX_SB_COOPERATIVE
+	bool "Cooperative secure boot commands"
+	default y
+
 menu "Board configuration"
 
 config BUILTIN_DTB

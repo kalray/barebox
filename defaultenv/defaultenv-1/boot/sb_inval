@@ -1,0 +1,10 @@
+#!/bin/sh
+
+CURRENT_FSBL=/dev/mtd0.fsbl_a
+
+if [ $global.bootchooser.path_a.default_priority -lt $global.bootchooser.path_b.default_priority ]; then
+	CURRENT_FSBL=/dev/mtd0.fsbl_b
+fi
+
+echo "invalidating $CURRENT_FSBL"
+sb_inval_path $CURRENT_FSBL
