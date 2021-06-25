@@ -1,0 +1,3 @@
+#!/bin/sh
+
+bootm /dev/disk0.0

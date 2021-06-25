@@ -1,0 +1,21 @@
+# clear potential nv var
+nv -r bootchooser.path_a.priority bootchooser.path_a.remaining_attempts bootchooser.path_b.priority bootchooser.path_b.remaining_attempts
+
+# initialize target 'path_a'
+global bootchooser.path_a.boot=system_a
+sb_get_prio bootchooser.path_a.default_priority /dev/mtd0.fsbl_a
+global bootchooser.path_a.default_attempts=1
+
+# initialize target 'path_b'
+global bootchooser.path_b.boot=system_b
+sb_get_prio bootchooser.path_b.default_priority /dev/mtd0.fsbl_b
+global bootchooser.path_b.default_attempts=1
+
+# make targets known
+global bootchooser.targets="path_a path_b"
+
+# Do not retry: if a target fails, bootchooser should fail and let recovery script invalid that image
+global bootchooser.retry=0
+
+# When bootchooser fails, execute the invalidator for the current path
+global boot.default="bootchooser sb_inval"
