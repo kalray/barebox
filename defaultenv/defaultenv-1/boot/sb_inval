@@ -8,3 +8,4 @@ fi
 
 echo "invalidating $CURRENT_FSBL"
 sb_inval_path $CURRENT_FSBL
+reset
