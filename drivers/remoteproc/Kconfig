@@ -31,6 +31,16 @@ config STM32_REMOTEPROC
 
 	  It's safe to say N here.
 
+config KVX_REMOTEPROC
+	tristate "KVX remoteproc support"
+	depends on KVX
+	select MFD_SYSCON
+	help
+	  Say y here to support KVX clusters via the
+	  remote processor framework.
+
+	  It's safe to say N here.
+
 endif # REMOTEPROC
 
 endmenu
