@@ -41,6 +41,7 @@ struct rproc {
 
 struct rproc *rproc_alloc(struct device *dev, const char *name,
 			  const struct rproc_ops *ops, int len);
+void rproc_free(struct rproc *rproc);
 int rproc_add(struct rproc *rproc);
 
 #endif /* REMOTEPROC_H */

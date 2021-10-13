@@ -181,3 +181,9 @@ struct rproc *rproc_alloc(struct device *dev, const char *name,
 
 	return rproc;
 }
+
+void rproc_free(struct rproc *rproc)
+{
+	free(rproc->ops);
+	free(rproc);
+}
