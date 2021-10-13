@@ -139,6 +139,9 @@ static int load_elf_to_memory(struct elf_image *elf)
 				return -errno;
 			}
 		} else {
+			if (p_offset + p_filesz > elf->size)
+				return -EIO;
+
 			memcpy(dst, elf->hdr_buf + p_offset, p_filesz);
 		}
 
@@ -217,10 +220,14 @@ static void elf_init_struct(struct elf_image *elf)
 	elf->filename = NULL;
 }
 
-struct elf_image *elf_open_binary(void *buf)
+struct elf_image *elf_open_binary(void *buf, size_t size)
 {
 	int ret;
 	struct elf_image *elf;
+
+	/* We should at least have size for a an elf32 header */
+	if (size < sizeof(Elf32_Ehdr))
+		return NULL;
 
 	elf = calloc(1, sizeof(*elf));
 	if (!elf)
@@ -228,6 +235,7 @@ struct elf_image *elf_open_binary(void *buf)
 
 	elf_init_struct(elf);
 
+	elf->size = size;
 	elf->hdr_buf = buf;
 	ret = elf_check_image(elf, buf);
 	if (ret) {
