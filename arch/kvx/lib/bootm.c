@@ -109,7 +109,7 @@ static int do_bootm_fit(struct image_data *data)
 	int ret;
 	struct elf_image *elf;
 
-	elf = elf_open_binary((void *) data->fit_kernel);
+	elf = elf_open_binary((void *) data->fit_kernel, data->fit_kernel_size);
 	if (IS_ERR(elf))
 		return PTR_ERR(data->elf);
 
