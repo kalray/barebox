@@ -33,6 +33,7 @@ struct rproc {
 	void *priv;
 	struct rproc_ops *ops;
 	struct device dev;
+	u64 bootaddr;
 
 	void *fw_buf;
 	size_t fw_buf_ofs;

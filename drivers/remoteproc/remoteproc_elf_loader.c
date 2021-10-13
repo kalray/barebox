@@ -85,6 +85,7 @@ int rproc_elf_load_segments(struct rproc *rproc, const struct firmware *fw)
 
 	buf = elf->hdr_buf;
 	phdr = (void *) (buf + elf_hdr_e_phoff(elf, buf));
+	rproc->bootaddr = elf_hdr_e_entry(elf, buf);
 
 	/* go through the available ELF segments */
 	for (i = 0; i < elf_hdr_e_phnum(elf, buf); i++) {
