@@ -28,6 +28,7 @@ if [ -n $autoboot_timeout ]; then
 	echo -n "Hit any key to stop autoboot: "
 	timeout -a $autoboot_timeout
 	if [ $? != 0 ]; then
+		wd 0
 		exit
 	fi
 
