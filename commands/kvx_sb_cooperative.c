@@ -33,7 +33,7 @@ static int sb_get_boot_prio(uint32_t toc_image_flag)
 	case UNDER_EVAL_IMG:
 		return 5;
 	case NEW_IMG:
-		return 1;
+		return 6;
 	case NO_IMG:
 		return 0;
 	default:
