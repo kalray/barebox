@@ -81,7 +81,7 @@ static int base38_decode(char *s, u64 val, int nb_char)
 	return 0;
 }
 
-static int kvx_read_serial(struct device_node *socinfo)
+static int kvx_read_mppa_id(struct device_node *socinfo)
 {
 	char lot_id[LOT_ID_STR_LEN + 1] = "";
 	char com_ap;
