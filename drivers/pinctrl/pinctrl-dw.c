@@ -210,7 +210,7 @@ static int dw_gpio_add_port(struct device *dev, struct device_node *node,
 	chip->chip.dev->of_node = node;
 
 	if (of_property_read_bool(node, "snps,has-pinctrl")) {
-		chip->pdev.dev = dev;
+		chip->pdev.dev = chip->chip.dev;
 		chip->pdev.ops = &dw_pinctrl_ops;
 		ret = pinctrl_register(&chip->pdev);
 		if (ret) {
