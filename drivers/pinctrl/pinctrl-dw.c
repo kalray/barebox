@@ -173,15 +173,16 @@ static struct pinctrl_ops dw_pinctrl_ops = {
 	.set_state = dw_pinctrl_set_state,
 };
 
-static int dw_gpio_add_port(struct device *dev, struct device_node *node,
-			    struct dw_gpio *parent)
+static int dw_gpio_add_port(struct device *dev, struct dw_gpio *parent)
 {
+	struct device_node *node = dev->of_node;
 	struct dw_gpio_instance *chip;
 	uint32_t config1, config2;
 	int ngpio, ret;
 
 	chip = xzalloc(sizeof(*chip));
 
+	chip->chip.dev = dev;
 	chip->chip.ops = &dw_gpio_ops;
 	if (dev->id < 0)
 		chip->chip.base = DEVICE_ID_DYNAMIC;
@@ -197,20 +198,8 @@ static int dw_gpio_add_port(struct device *dev, struct device_node *node,
 
 	chip->parent = parent;
 	chip->chip.ngpio = ngpio;
-	chip->chip.dev = add_generic_device("dw-port", DEVICE_ID_DYNAMIC, NULL,
-					    dev->resource[0].start,
-					    resource_size(&dev->resource[0]),
-					    IORESOURCE_MEM, NULL);
-
-	if (!chip->chip.dev) {
-		dev_err(dev, "unable to add device\n");
-		return -ENODEV;
-	}
-
-	chip->chip.dev->of_node = node;
-
 	if (of_property_read_bool(node, "snps,has-pinctrl")) {
-		chip->pdev.dev = chip->chip.dev;
+		chip->pdev.dev = dev;
 		chip->pdev.ops = &dw_pinctrl_ops;
 		ret = pinctrl_register(&chip->pdev);
 		if (ret) {
@@ -229,6 +218,24 @@ static int dw_gpio_add_port(struct device *dev, struct device_node *node,
 	return 0;
 }
 
+static struct device *add_dw_port_device(struct device *parent,
+					 struct resource *iores,
+					 struct device_node *node)
+{
+	struct device *dev;
+
+	dev = device_alloc("dw-port", DEVICE_ID_DYNAMIC);
+	dev->platform_data = NULL;
+	device_add_resources(dev, iores, 1);
+
+	dev->parent = parent;
+	dev->of_node = node;
+
+	platform_device_register(dev);
+
+	return dev;
+}
+
 static int dw_gpio_probe(struct device *dev)
 {
 	struct resource *iores;
@@ -242,8 +249,11 @@ static int dw_gpio_probe(struct device *dev)
 		return PTR_ERR(iores);
 	gpio->regs = IOMEM(iores->start);
 
-	for_each_child_of_node(dev->of_node, node)
-		dw_gpio_add_port(dev, node, gpio);
+	for_each_child_of_node(dev->of_node, node) {
+		struct device *portdev = add_dw_port_device(dev, iores, node);
+
+		dw_gpio_add_port(portdev, gpio);
+	}
 
 	return 0;
 }
