@@ -260,6 +260,9 @@ static int dw_spi_of_get_flash_pdata(struct device *dev,
 				     struct dw_spi_flash_pdata *f_pdata,
 				     struct device_node *np)
 {
+	struct dw_spi_nor *dw_spi = dev->priv;
+	unsigned int max_clk_rate = dw_spi->master_ref_clk_hz / 2;
+
 	if (!np)
 		return 0;
 
@@ -269,6 +272,13 @@ static int dw_spi_of_get_flash_pdata(struct device *dev,
 	}
 
 	dev_dbg(dev, "spi-max-frequency = %u\n", f_pdata->clk_rate);
+
+	/* spi clock cannot go higher than half the master ref clock */
+	if (f_pdata->clk_rate > max_clk_rate) {
+		f_pdata->clk_rate = max_clk_rate;
+		dev_warn(dev, "limiting spi frequency to %u\n",
+			 f_pdata->clk_rate);
+	}
 
 	return 0;
 }
@@ -328,6 +338,8 @@ static int dw_spi_config_baudrate_div(struct dw_spi_nor *dws, unsigned int sclk)
 
 	dws->sclk = sclk;
 	div = dws->master_ref_clk_hz / sclk;
+	/* divisor value must be even */
+	div += div % 2;
 
 	dev_dbg(dws->dev, "configure clock divider (%u/%u) -> %u\n",
 		dws->master_ref_clk_hz, sclk, div);
