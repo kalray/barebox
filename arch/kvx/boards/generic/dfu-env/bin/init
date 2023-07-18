@@ -9,9 +9,6 @@ gadget0.product=0xdf02
 gadget0.manufacturer=Kalray
 gadget0.productname=$global.kvx.arch_rev
 gadget0.serialnumber=$global.kvx.mppa_id
-if [ -n "$global.kvx.board_sn" ]; then
-	gadget0.serialnumber=$global.kvx.board_sn
-fi
 
 alt="/tmp/kernel(/tmp/kernel)cr"
 for i in /dev/mtd*;  do if [ -e "$i" ]; then; alt="$alt,$i($i)sr"; fi; done;
