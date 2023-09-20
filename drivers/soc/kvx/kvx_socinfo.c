@@ -69,8 +69,8 @@ static void kvx_soc_info_read_revision(void)
 static int base38_decode(char *s, u64 val, int nb_char)
 {
 	int i;
-	const char *alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_?";
-	const int base = strlen(alphabet);
+	const char alphabet[] = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_";
+	const int base = sizeof(alphabet);
 
 	if (s == NULL)
 		return -1;
@@ -120,8 +120,7 @@ static int kvx_read_mppa_id(struct device_node *socinfo)
 	base38_decode(&com_ap, (ft_val >> FT_COM_AP_SHIFT) & FT_COM_AP_MASK, 1);
 	free(cell_val32);
 
-	kvx_mppa_id = basprintf("%sA-%d%c-%03d", lot_id, wafer_id, com_ap,
-			       device_id);
+	kvx_mppa_id = basprintf("%sA-%dE-%03d", lot_id, wafer_id, device_id);
 
 	globalvar_add_simple_string("kvx.mppa_id", &kvx_mppa_id);
 
