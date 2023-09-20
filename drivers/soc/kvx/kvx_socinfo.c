@@ -22,7 +22,7 @@
 
 #define LOT_ID_STR_LEN	8
 
-#define EWS_LOT_ID_MASK		0x1ffffffffffULL
+#define EWS_LOT_ID_MASK		0x3ffffffffffULL
 #define EWS_WAFER_ID_SHIFT	42
 #define EWS_WAFER_ID_MASK	0x1fULL
 
@@ -101,7 +101,10 @@ static int kvx_read_mppa_id(struct device_node *socinfo)
 	}
 
 	ews_val = *cell_val64;
+#ifdef CONFIG_ARCH_COOLIDGE_V1
+	/* On kv3-1, 32b regs on traceability are written in reverse order */
 	ews_val = (ews_val >> 32) | (ews_val << 32);
+#endif
 	wafer_id = (ews_val >> EWS_WAFER_ID_SHIFT) & EWS_WAFER_ID_MASK;
 	base38_decode(lot_id, ews_val & EWS_LOT_ID_MASK, LOT_ID_STR_LEN);
 	free(cell_val64);
